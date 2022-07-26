@@ -17,13 +17,13 @@ p() {
 	secret=$(pass "$1" | head -n 2)
 
 	if [ -z "$secret" ]; then
-		echo "✘ Failed to retrieve password"
+		echo "\e[0;31m✘ failed to retrieve password\e[0m"
 		return 1
 	fi
 
 	# Put the password in the X selection (also called primary, see `man xclip`)
 	echo "$secret" | head -n 1 | tr -d "\n" | xclip
-	printf "✔ Retrieved password"
+	echo "\e[0;32m✔ password retrieved\e[0m"
 
 	local username
 	username=$(echo "$secret" | tail -n 1)
@@ -31,22 +31,22 @@ p() {
 	if [[ "$username" =~ ^username:\w* ]]; then
 		# Put the username in the clipboard
 		echo "${username#"username: "}" | tr -d "\n" | xclip -selection clipboard
-		echo " and username"
+		echo "\e[0;32m✔ username retrieved\e[0m"
 	else
-		echo " only"
+		echo "\e[0;93m- no username\e[0m"
 	fi
 
 	unset secret
 	unset username
 
 	for i in {5..1}; do
-		printf "\r• Clearing password in %s" "$i"
+		printf "\r• clearing password in %s" "$i"
 		sleep 1
 	done
 
 	echo -n "" | xclip
 
-	printf "\r✔ Password cleared       \n"
+	printf "\r\e[0;32m✔ password cleared\e[0m       \n"
 }
 
 compdef _pass p
